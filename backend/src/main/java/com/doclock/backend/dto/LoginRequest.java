@@ -1,0 +1,1 @@
+package com.doclock.backend.dto; public record LoginRequest(String username,String password){}

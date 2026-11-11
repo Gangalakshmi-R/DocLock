@@ -1,0 +1,1 @@
+package com.doclock.backend.dto; public record ChatRequest(Long conversationId, Long documentId, String message){}
