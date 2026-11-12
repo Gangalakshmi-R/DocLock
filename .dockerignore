@@ -1,7 +1,9 @@
+.git
+.env
 **/node_modules
-**/dist
 **/target
-**/.env
-**/.git
-**/storage
-**/*.log
+**/dist
+**/__pycache__
+**/.venv
+storage
+*.log
