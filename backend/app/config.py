@@ -56,6 +56,13 @@ CHROMA_URL = os.getenv("CHROMA_BASE_URL", "http://chroma:8000").rstrip("/")
 CHROMA_COLLECTION = os.getenv("CHROMA_COLLECTION", "doclock_vectors")
 TIKA_URL = os.getenv("TIKA_URL", "http://tika:9998").rstrip("/")
 
+# --- OCR ---------------------------------------------------------------------------
+OCR_ENABLED = _bool("DOCLOCK_OCR_ENABLED", True)
+OCR_LANG = os.getenv("DOCLOCK_OCR_LANG", "eng+tam")
+OCR_DPI = int(os.getenv("DOCLOCK_OCR_DPI", "220"))
+OCR_MIN_PAGE_CHARS = int(os.getenv("DOCLOCK_OCR_MIN_PAGE_CHARS", "30"))
+OCR_TIMEOUT_SECONDS = int(os.getenv("DOCLOCK_OCR_TIMEOUT_SECONDS", "90"))
+
 # --- RAG tuning -----------------------------------------------------------------
 CHUNK_SIZE = int(os.getenv("DOCLOCK_CHUNK_SIZE", "1000"))
 CHUNK_OVERLAP = int(os.getenv("DOCLOCK_CHUNK_OVERLAP", "150"))

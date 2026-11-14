@@ -8,6 +8,7 @@ longer blocks the request. The UI polls the document's ``status``:
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from sqlalchemy import delete, select
@@ -32,12 +33,26 @@ def _index_chunks(db: Session, doc: Document, text: str) -> tuple[int, int]:
     """Chunk, embed (in batches) and store passages. Returns (chunk_count, embedded_count)."""
     chunks = split_chunks(text, config.CHUNK_SIZE, config.CHUNK_OVERLAP)
     vectors = embeddings.embed_batch([c[0] for c in chunks]) if chunks else []
+    # OCR/text-PDF extraction inserts stable [Page N] markers. Persist the page for each
+    # chunk so retrieval citations can point users back to the original scanned page.
+    page_markers = [(match.start(), int(match.group(1)))
+                    for match in re.finditer(r"(?m)^\[Page (\d+)\]\s*$", text)]
+
+    def page_for_offset(offset: int):
+        page_number = None
+        for marker_offset, number in page_markers:
+            if marker_offset > offset:
+                break
+            page_number = number
+        return page_number
+
     rows: list[DocumentChunk] = []
     upserts: list[dict] = []
     for index, ((chunk_text, start, end), vector) in enumerate(zip(chunks, vectors)):
         vector_id = f"doc-{doc.id}-chunk-{index}"
         rows.append(DocumentChunk(document_id=doc.id, chunk_index=index, content=chunk_text, vector_id=vector_id,
-                                  vector_json=json.dumps(vector) if vector else None, start_char=start, end_char=end))
+                                  vector_json=json.dumps(vector) if vector else None,
+                                  page_number=page_for_offset(start), start_char=start, end_char=end))
         if vector:
             upserts.append({"id": vector_id, "vector": vector, "text": chunk_text, "document_id": doc.id,
                             "filename": doc.original_filename, "chunk_index": index})
@@ -81,7 +96,22 @@ def process_document(document_id: int) -> None:
             return
         try:
             _set_status(db, doc, "EXTRACTING")
-            text = extraction.extract_text(Path(doc.storage_path))
+            source_path = Path(doc.storage_path)
+            # OCR is automatic for PDFs and raster images. Other formats retain the existing
+            # Tika/plain-text extraction path. Keep extract_text as the compatibility hook
+            # used by existing integrations and tests.
+            if source_path.suffix.lower() == ".pdf" or source_path.suffix.lower() in extraction.IMAGE_EXTENSIONS:
+                extraction_result = extraction.extract_document(source_path)
+            else:
+                extraction_result = extraction.ExtractionResult(extraction.extract_text(source_path))
+            text = extraction_result.text
+            if extraction_result.page_count is not None:
+                doc.page_count = extraction_result.page_count
+            if extraction_result.ocr_used:
+                print(
+                    f"OCR completed for document {doc.id}; "
+                    f"pages: {', '.join(map(str, extraction_result.ocr_pages)) or 'unknown'}"
+                )
             db.add(DocumentContent(document_id=doc.id, extracted_text=text, word_count=len(text.split())))
             db.commit()
 
