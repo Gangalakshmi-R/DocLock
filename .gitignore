@@ -1,0 +1,37 @@
+# --- Secrets: never commit your real settings ---
+.env
+.env.*
+!.env.example
+
+# --- Node / frontend ---
+node_modules/
+frontend/dist/
+npm-debug.log*
+
+# --- Python / backend ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# --- Uploaded documents and local data (private!) ---
+storage/
+backend/storage/
+*.db
+*.sqlite3
+pgdata/
+chroma_data/
+
+# --- Generated evaluation output (re-create with eval/run_eval.py) ---
+eval/results.md
+
+# --- Logs, editors, OS ---
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

@@ -1,0 +1,38 @@
+{
+  "description": "DocLock evaluation set. 'direct' questions reuse the document's own wording; 'paraphrase' questions deliberately avoid it, so keyword search is at a disadvantage. 'evidence' must appear verbatim in the gold document (checked by backend/tests/test_eval_dataset.py). Unanswerable questions have no answer in the corpus: the correct behaviour is to say so.",
+  "questions": [
+    {"id": "ins-1", "doc": "health_insurance_policy.txt", "style": "direct", "question": "What is the sum insured under the policy?", "evidence": "Rs. 5,00,000 per policy year", "answer_any": ["5,00,000", "500000", "5 lakh"]},
+    {"id": "ins-2", "doc": "health_insurance_policy.txt", "style": "paraphrase", "question": "How long must I wait before my existing medical conditions are covered?", "evidence": "pre-existing diseases is 24 months", "answer_any": ["24 months", "two years", "2 years"]},
+    {"id": "ins-3", "doc": "health_insurance_policy.txt", "style": "direct", "question": "Within how many hours must the insurer be informed about an emergency hospitalisation?", "evidence": "within 48 hours of admission", "answer_any": ["48 hours", "48"]},
+    {"id": "ins-4", "doc": "health_insurance_policy.txt", "style": "direct", "question": "What is the claims helpline number?", "evidence": "1800-555-0142", "answer_any": ["1800-555-0142"]},
+    {"id": "ins-5", "doc": "health_insurance_policy.txt", "style": "paraphrase", "question": "What is the upper limit on the discount I accumulate for not making claims?", "evidence": "maximum of 50% of the sum insured", "answer_any": ["50%", "50 percent", "fifty"]},
+    {"id": "ins-6", "doc": "health_insurance_policy.txt", "style": "paraphrase", "question": "How early does the company warn me that my coverage is about to end?", "evidence": "45 days before the expiry date", "answer_any": ["45 days", "45"]},
+
+    {"id": "rent-1", "doc": "rental_agreement.txt", "style": "direct", "question": "How much is the monthly rent for the flat?", "evidence": "monthly rent is Rs. 18,500", "answer_any": ["18,500", "18500"]},
+    {"id": "rent-2", "doc": "rental_agreement.txt", "style": "paraphrase", "question": "What penalty does the tenant pay for being slow with the monthly payment?", "evidence": "late fee of Rs. 250 per day", "answer_any": ["250"]},
+    {"id": "rent-3", "doc": "rental_agreement.txt", "style": "direct", "question": "How long is the lock-in period in the lease?", "evidence": "lock-in period of 6 months", "answer_any": ["6 months", "six months"]},
+    {"id": "rent-4", "doc": "rental_agreement.txt", "style": "paraphrase", "question": "How soon does the tenant get the advance money back after moving out?", "evidence": "refunded within 30 days after the tenant vacates", "answer_any": ["30 days", "thirty days"]},
+    {"id": "rent-5", "doc": "rental_agreement.txt", "style": "direct", "question": "How many persons may reside in the flat at one time?", "evidence": "No more than four persons", "answer_any": ["four", "4"]},
+    {"id": "rent-6", "doc": "rental_agreement.txt", "style": "paraphrase", "question": "Can the owner walk in to check the flat without telling the tenant first?", "evidence": "24 hours prior notice", "answer_any": ["24 hours", "24-hour", "prior notice", "notice"]},
+
+    {"id": "fee-1", "doc": "college_fee_circular.txt", "style": "direct", "question": "What is the tuition fee for the odd semester?", "evidence": "tuition fee for the odd semester is Rs. 85,000", "answer_any": ["85,000", "85000"]},
+    {"id": "fee-2", "doc": "college_fee_circular.txt", "style": "paraphrase", "question": "By which day should students settle their college dues to avoid any extra charge?", "evidence": "last date to pay fees without fine is 20 August 2026", "answer_any": ["20 august", "august 20", "20/08", "2026-08-20"]},
+    {"id": "fee-3", "doc": "college_fee_circular.txt", "style": "direct", "question": "What late fee does the college charge per day after the due date?", "evidence": "late fee of Rs. 100 per day", "answer_any": ["100"]},
+    {"id": "fee-4", "doc": "college_fee_circular.txt", "style": "paraphrase", "question": "If a student leaves the institution early in the term, how much money is returned?", "evidence": "75% of the tuition fee will be refunded", "answer_any": ["75%", "75 percent", "three-quarters"]},
+    {"id": "fee-5", "doc": "college_fee_circular.txt", "style": "direct", "question": "What is the minimum attendance required for the end semester examinations?", "evidence": "minimum attendance of 75% is mandatory", "answer_any": ["75%", "75 percent"]},
+    {"id": "fee-6", "doc": "college_fee_circular.txt", "style": "paraphrase", "question": "How much extra must a student pay to sit for exams if their attendance is a bit short?", "evidence": "condonation fee of Rs. 500 per subject", "answer_any": ["500"]},
+
+    {"id": "ml-1", "doc": "ml_revision_notes.txt", "style": "direct", "question": "What can L1 regularisation do that L2 regularisation cannot?", "evidence": "drive some weights to exactly zero", "answer_any": ["zero", "feature selection", "sparse"]},
+    {"id": "ml-2", "doc": "ml_revision_notes.txt", "style": "direct", "question": "What dropout rate is a common default for fully connected layers?", "evidence": "dropout rate of 0.5", "answer_any": ["0.5"]},
+    {"id": "ml-3", "doc": "ml_revision_notes.txt", "style": "direct", "question": "How is the F1 score defined?", "evidence": "harmonic mean of precision and recall", "answer_any": ["harmonic mean"]},
+    {"id": "ml-4", "doc": "ml_revision_notes.txt", "style": "paraphrase", "question": "For catching scams, which measure matters more: finding all the bad cases or avoiding false alarms?", "evidence": "recall is usually prioritised over precision", "answer_any": ["recall"]},
+    {"id": "ml-5", "doc": "ml_revision_notes.txt", "style": "direct", "question": "What constant k is commonly used in reciprocal rank fusion?", "evidence": "k commonly set to 60", "answer_any": ["60"]},
+    {"id": "ml-6", "doc": "ml_revision_notes.txt", "style": "paraphrase", "question": "Why do consecutive passages share some text when documents are split up?", "evidence": "Chunk overlap prevents an answer that spans a boundary", "answer_any": ["boundary", "cut in half", "spans", "split"]}
+  ],
+  "unanswerable": [
+    {"id": "none-1", "question": "Who is the chief executive officer of Sunrise Health Assurance?"},
+    {"id": "none-2", "question": "Does the lease allow parking a car, and what is the parking fee?"},
+    {"id": "none-3", "question": "What is the hostel mess menu on Sundays?"},
+    {"id": "none-4", "question": "What learning rate is used to train ResNet-50 in these notes?"}
+  ]
+}

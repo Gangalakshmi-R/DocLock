@@ -1,0 +1,16 @@
+MACHINE LEARNING AND RETRIEVAL - REVISION NOTES
+
+Overfitting and generalisation
+A model overfits when it memorises noise in the training data instead of learning the underlying pattern, so training error is low but validation error is high. Common remedies are collecting more data, simplifying the model, early stopping and regularisation. L2 regularisation adds a penalty proportional to the sum of squared weights, which shrinks the weights without making them exactly zero, whereas L1 regularisation can drive some weights to exactly zero and therefore performs feature selection.
+
+Validation
+In k-fold cross-validation the data is split into k equal parts; each part is used once for validation while the remaining parts train the model. A common choice is k = 5 or k = 10. A stratified split keeps the class proportions the same in every fold, which matters for imbalanced datasets.
+
+Classification metrics
+Precision is the fraction of predicted positives that are truly positive, while recall is the fraction of actual positives that the model finds. The F1 score is the harmonic mean of precision and recall. For a fraud detection problem where missing a fraud is costly, recall is usually prioritised over precision.
+
+Neural network training
+Gradient descent updates the weights in the direction opposite to the gradient of the loss. If the learning rate is too high, the loss oscillates or diverges; if it is too low, training is very slow. Dropout randomly switches off neurons during training, and a dropout rate of 0.5 is a common default for fully connected layers. Batch normalisation stabilises training by normalising layer inputs.
+
+Retrieval-augmented generation
+A RAG system splits documents into chunks, converts each chunk into an embedding vector and stores the vectors in a vector database. At question time the query is embedded, the nearest chunks are retrieved and passed to the language model as context, which reduces hallucination because the answer is grounded in the retrieved text. Chunk overlap prevents an answer that spans a boundary from being cut in half. Keyword search with BM25 complements dense retrieval because it matches exact terms such as names and numbers. In BM25 the saturation parameter k1 is typically set between 1.2 and 2.0. Reciprocal rank fusion combines two rankings by summing 1 divided by (k + rank) for each list, with k commonly set to 60.

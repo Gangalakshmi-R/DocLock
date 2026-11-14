@@ -1,0 +1,8 @@
+KYC DETAILS (SYNTHETIC SAMPLE - NOT A REAL PERSON)
+Name: Test Student
+Aadhaar: 2345 6789 0124
+PAN: ABCPE1234F
+Mobile: +91 98765 43210
+Email: test.student@example.com
+Bank: Sample Bank, IFSC SBIN0001234
+Policy period: 1 January 2027 to 31 December 2027

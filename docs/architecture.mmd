@@ -1,0 +1,38 @@
+flowchart LR
+  UI["React + Vite UI<br/>status polling · alerts panel · chat"]
+
+  subgraph API["FastAPI backend (modular)"]
+    direction TB
+    AUTH["routers/auth<br/>JWT · PBKDF2 · login rate limit"]
+    DOCS["routers/documents<br/>upload 202 · facts · view/download"]
+    CHAT["routers/chat<br/>/chat · /retrieve"]
+    ALERTS["routers/alerts<br/>deadlines & expiries"]
+    BG[["services/ingestion<br/>background task"]]
+    RET["services/retrieval<br/>vector · BM25 · hybrid (RRF)"]
+    FACTS["services/facts<br/>regex + validated LLM"]
+  end
+
+  PG[("PostgreSQL<br/>documents · chunks · facts · alerts · chats")]
+  FS[("File volume")]
+  CH[("ChromaDB<br/>vectors")]
+  TIKA["Apache Tika<br/>text extraction"]
+  OLL["Ollama<br/>Nomic embeddings · Llama 3.1 8B"]
+
+  UI -- "JWT REST" --> AUTH
+  UI --> DOCS
+  UI --> CHAT
+  UI --> ALERTS
+  DOCS -- "save file, return 202" --> FS
+  DOCS -- "enqueue" --> BG
+  BG --> TIKA
+  BG -- "batch embed" --> OLL
+  BG --> CH
+  BG --> FACTS
+  FACTS -- "JSON facts" --> OLL
+  BG --> PG
+  CHAT --> RET
+  RET --> CH
+  RET --> PG
+  RET -- "query embedding" --> OLL
+  CHAT -- "grounded prompt" --> OLL
+  ALERTS --> PG
