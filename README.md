@@ -1,83 +1,68 @@
-# 🔐 DocLock
+<h1 align="center">🔐 DocLock</h1>
 
-**A private, self-hosted AI assistant for personal documents.** Upload insurance policies, rent agreements or fee circulars, then ask questions and get cited answers, deadline alerts and a privacy scan. Everything runs locally, so no document ever leaves your machine.
+<p align="center"><b>A private, self-hosted AI assistant for your personal documents.</b><br>
+Ask questions with cited answers, verify every number, get deadline alerts, and mask Aadhaar/PAN.<br>
+Everything runs locally. No document leaves your machine.</p>
 
-![Python](https://img.shields.io/badge/Python-3.11+-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-backend-009688)
-![React](https://img.shields.io/badge/React-18-61dafb)
-![Docker](https://img.shields.io/badge/Docker-Compose-2496ed)
-![LLM](https://img.shields.io/badge/LLM-Llama%203.1%208B%20(local)-purple)
+<p align="center">
+  <img alt="tests" src="https://img.shields.io/badge/tests-152%20passing-brightgreen">
+  <img alt="python" src="https://img.shields.io/badge/Python-3.11+-blue">
+  <img alt="fastapi" src="https://img.shields.io/badge/FastAPI-backend-009688">
+  <img alt="react" src="https://img.shields.io/badge/React-18-61dafb">
+  <img alt="docker" src="https://img.shields.io/badge/Docker-compose-2496ed">
+</p>
 
 <p align="center"><img src="docs/demo.gif" alt="DocLock demo" width="800"></p>
 
-## Problem
+## Features
 
-Important papers are long and full of dates and amounts people miss. Typical "chat with your PDF" tools send private data to the cloud, sometimes state wrong numbers confidently, and never warn you about expiring deadlines. DocLock addresses all three.
+- **Cited Q&A (RAG):** hybrid search (vector + BM25, rank-fused) over one or all documents, with multi-turn chat and source citations.
+- **Answer trust check:** every number and date in an answer is checked against the retrieved passages, and unverified figures are flagged. No second LLM call.
+- **Deadline and expiry alerts:** dates and amounts are extracted (regex + LLM, grounded in the text) into OVERDUE / DUE SOON / UPCOMING alerts, exportable as a `.ics` calendar file.
+- **Privacy scan:** detects Aadhaar (Verhoeff-validated), PAN, GSTIN, IFSC, phone and email. Values are shown masked only, with a one-click redacted copy.
+- **Document type and checklist:** classifies the document (insurance, rental, fee circular, etc.) and lists expected clauses that are missing.
+- **Automatic OCR:** scanned PDFs and images are read with Tesseract (English + Tamil).
+- **Async ingestion:** uploads return instantly and process in the background with live status.
+- **Secure login:** JWT, PBKDF2-hashed password option, login rate limiting.
 
-## Key Features
+## Tech stack
 
-- **Answer trust check:** every number and date in the LLM's answer is verified against the retrieved passages (e.g. "3 of 4 figures verified"). It is deterministic and needs no second LLM call.
-- **Deadline and expiry alerts:** extracts dates and amounts (regex + LLM, grounded against the document text so invented values are dropped), classifies them as Overdue / Due soon / Upcoming, and exports to calendar as `.ics`.
-- **India-specific privacy scan:** detects Aadhaar (Verhoeff checksum validated), PAN, GSTIN, IFSC, mobile and email. Only masked values are returned, with a one-click redacted copy.
-- **Hybrid retrieval:** vector search + BM25 fused with reciprocal rank fusion, with graceful fallback to keyword search if embeddings are down.
-- **Document type + checklist:** classifies the document and flags missing clauses (waiting period, exclusions, notice period).
-- **Automatic OCR:** scanned PDFs and images via Tesseract (English + Tamil); text pages skip OCR.
-- **Async ingestion:** uploads return instantly while processing runs in the background with live progress.
+React 18 + Vite · FastAPI · PostgreSQL · ChromaDB · Ollama (Llama 3.1 8B, Nomic embeddings) · Apache Tika · PyMuPDF · Tesseract · Docker Compose
 
-## Tech Stack
+## Quick start
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 18, Vite, Tailwind CSS |
-| Backend | FastAPI, SQLAlchemy, JWT auth (PBKDF2-SHA256 hashing, login rate-limiting) |
-| Data | PostgreSQL, ChromaDB (vectors) |
-| AI / NLP | Ollama (Llama 3.1 8B, nomic-embed-text), BM25, RRF |
-| Document processing | Apache Tika, PyMuPDF, Tesseract OCR |
-| DevOps | Docker Compose (7 services) |
-
-## Architecture
-
-<p align="center"><img src="docs/architecture.png" alt="Architecture" width="800"></p>
-
-Upload → text extraction (Tika / PyMuPDF / OCR) → chunking → embeddings (Chroma) + fact extraction and privacy scan (Postgres) → hybrid retrieval → grounded LLM answer → numeric verification.
-
-## Results
-
-A chunk-size experiment on 24 questions over 4 documents (BM25, top-3) shaped the default configuration:
-
-| Chunk size | hit@3 | Context sent to LLM |
-|---|---:|---:|
-| 500 | 83% | ~1,100 chars |
-| **1000 (chosen)** | **96%** | ~2,300 chars |
-| 3000 | 100% | ~5,500 chars |
-
-The 3000-character setting scores highest only because each document becomes a single chunk, so 1000 gives 96% hit@3 at less than half the context cost. Reproduce with `python eval/offline_chunk_experiment.py`.
-
-## Quick Start
-
-Requires Docker Desktop (~10 GB disk, 8 GB+ RAM).
+Requires Docker Desktop (about 10 GB disk, 8 GB+ RAM).
 
 ```bash
-cp .env.example .env            # set the CHANGE_ME values
+cp .env.example .env          # set the three CHANGE_ME values
 docker compose up --build -d
+docker compose logs -f ollama-models   # first run: wait for model download
 ```
 
-Open **http://localhost:3000** and log in with the credentials from `.env`. Sample files are in `eval/corpus/` and `samples/`.
+Open **http://localhost:3000** and log in with `DOCLOCK_USERNAME` / `DOCLOCK_PASSWORD` from `.env`.
+Try the files in `eval/corpus/` and `samples/synthetic_kyc.txt`.
 
-## Project Structure
+To store a hashed password: `python backend/hash_password.py`.
 
+## Tests
+
+```bash
+cd backend && pip install -r requirements-dev.txt && pytest   # 152 tests, offline
 ```
-backend/app/   routers (auth, documents, chat, alerts, privacy) + services (retrieval, ranking, facts, verify, pii, ...)
-frontend/src/  React app
-eval/          benchmark corpus, questions, evaluation scripts
-docs/          architecture diagrams, demo, screenshots
-```
 
-## Limitations and Roadmap
+## Main API endpoints
 
-Single-user; ingestion uses in-process background tasks; extraction is heuristic, so important values should be checked against the original.
-**Next:** task queue (Celery/RQ), multi-user isolation, LLM-as-judge evaluation, semantic claim checking.
+| Path | Purpose |
+|---|---|
+| `POST /api/auth/login` | Log in |
+| `POST /api/documents` | Upload (processed in background) |
+| `POST /api/chat` | Cited answer + verification |
+| `GET /api/alerts` · `/api/alerts/calendar.ics` | Deadlines · calendar export |
+| `GET /api/privacy` | Vault-wide privacy report |
+| `GET /api/documents/{id}/insights` | Type, checklist, masked IDs |
 
----
+## Limitations
 
-Built by **Gangalakshmi Raja**
+Single user · in-process background tasks · heuristic extraction and OCR (always verify against the original) · the answer check validates numbers and dates, not meaning.
+
+<p align="center">Built by Gangalakshmi Raja</p>
