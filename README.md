@@ -134,8 +134,7 @@ DocLock/
 
 ## Future Enhancements
 
-- OCR support for scanned documents.
-- Tamil and regional language support.
+- Regional language support.
 - Multi-user authentication and access control.
 - Improved document intelligence.
 - Background task queue for large document processing.
@@ -145,10 +144,8 @@ DocLock/
 - Currently supports a single configured user account.
 - Background processing can be interrupted if the application restarts.
 - Extracted information should be verified against the original document.
-- OCR support for scanned documents is a planned enhancement.
 
 ---
 
 **Developed by Gangalakshmi Raja**
 
-*DocLock – Your documents, your privacy, your AI assistant.*
