@@ -29,26 +29,6 @@ Everything runs locally. No document leaves your machine.</p>
 
 React 18 + Vite · FastAPI · PostgreSQL · ChromaDB · Ollama (Llama 3.1 8B, Nomic embeddings) · Apache Tika · PyMuPDF · Tesseract · Docker Compose
 
-## Quick start
-
-Requires Docker Desktop (about 10 GB disk, 8 GB+ RAM).
-
-```bash
-cp .env.example .env          # set the three CHANGE_ME values
-docker compose up --build -d
-docker compose logs -f ollama-models   # first run: wait for model download
-```
-
-Open **http://localhost:3000** and log in with `DOCLOCK_USERNAME` / `DOCLOCK_PASSWORD` from `.env`.
-Try the files in `eval/corpus/` and `samples/synthetic_kyc.txt`.
-
-To store a hashed password: `python backend/hash_password.py`.
-
-## Tests
-
-```bash
-cd backend && pip install -r requirements-dev.txt && pytest   # 152 tests, offline
-```
 
 ## Main API endpoints
 
@@ -61,8 +41,5 @@ cd backend && pip install -r requirements-dev.txt && pytest   # 152 tests, offli
 | `GET /api/privacy` | Vault-wide privacy report |
 | `GET /api/documents/{id}/insights` | Type, checklist, masked IDs |
 
-## Limitations
-
-Single user · in-process background tasks · heuristic extraction and OCR (always verify against the original) · the answer check validates numbers and dates, not meaning.
 
 <p align="center">Built by Gangalakshmi Raja</p>
